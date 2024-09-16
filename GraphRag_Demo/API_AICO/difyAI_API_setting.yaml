@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  title: GraphRAG API
+  description: API to perform GraphRAG search on txt file
+  version: 1.0.0
+servers:
+  - url: http://101.201.33.94:8000
+paths:
+  /index:
+    post:
+      summary: Index the corpus based on user_id with optional autotune
+      description: With given user_id, index a user's corpus with an option to use autotune.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  description: The UUID of the user to be indexed.
+                  example: "_example_uuid_"
+                use_autotune:
+                  type: boolean
+                  description: Whether to use autotune during indexing.
+                  example: true
+      responses:
+        '200':
+          description: User successfully indexed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+                    description: return an index task id
+                  status::
+                    type: string
+                    description: A message of index task status.
+              examples:
+                success:
+                  summary: Example of a successful response
+                  value:
+                    status: "in Queue"
+                    task_id: "009047a1-ea97-4863-b003-651323864f6d"
+        '400':
+          description: Bad request due to invalid user_id.
+          content:
+            application/json:
+              examples:
+                invalid_user_id:
+                  summary: Example of an invalid user_id
+                  value:
+                    error: "Invalid user_id provided."
+                    code: 4003
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              examples:
+                server_error:
+                  summary: Example of an internal server error
+                  value:
+                    error: "Unexpected server error occurred."
+                    code: 5001
+
+  /status/:
+    get:
+      summary: Retrieve index task status
+      description: Returns the status of the index task with the specified task_id.
+      parameters:
+        - name: task_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The task id of the index processing task to retrieve the status for.
+      responses:
+        '200':
+          description: Successfully retrieved the task status.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  task_id:
+                    type: string
+        '400':
+          description: Bad request due to missing or invalid task_id.
+        '404':
+          description: Task not found.
+
+  /globalSearch/:
+    post:
+      summary: Perform a global search
+      description: Searches globally based on the provided task_id and query.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: task_id returned by indexing process
+                  example: "920cb3a7-3f10-4b88-8c5e-3b99108dcf53"
+                query:
+                  type: string
+                  description: The search query string.
+                  example: "故事里发生了什么?"
+      responses:
+        '200':
+          description: Successfully performed the global search.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          description: Title of the search result.
+                        snippet:
+                          type: string
+                          description: A snippet of the search result.
+                        link:
+                          type: string
+                          description: URL link to the full content.
+                          format: uri
+                  time_taken:
+                    type: string
+                    description: Time taken to perform the search.
+                    example: "0.456s"
+        '400':
+          description: Bad request due to invalid input data.
+        '404':
+          description: No results found.
+  /localSearch/:
+    post:
+      summary: Perform a global search
+      description: Searches globally based on the provided task_id and query.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: task_id returned by indexing process
+                  example: "920cb3a7-3f10-4b88-8c5e-3b99108dcf53"
+                query:
+                  type: string
+                  description: The search query string.
+                  example: "介绍一下故事的主人公?"
+      responses:
+        '200':
+          description: Successfully performed the global search.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          description: Title of the search result.
+                        snippet:
+                          type: string
+                          description: A snippet of the search result.
+                        link:
+                          type: string
+                          description: URL link to the full content.
+                          format: uri
+                  time_taken:
+                    type: string
+                    description: Time taken to perform the search.
+                    example: "0.456s"
+        '400':
+          description: Bad request due to invalid input data.
+        '404':
+          description: No results found.

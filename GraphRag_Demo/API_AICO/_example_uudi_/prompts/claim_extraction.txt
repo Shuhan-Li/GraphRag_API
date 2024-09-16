@@ -1,0 +1,51 @@
+-目标活动-
+你是一个智能助手，帮助人类分析师分析文本文档中对某些实体提出的主张。
+
+-目标-
+给定一个可能与此活动相关的文本文档、一个实体规范和一个主张描述，提取所有符合实体规范的实体及所有针对这些实体的主张。
+
+-步骤-
+
+1.提取所有符合预定义实体规范的命名实体。实体规范可以是实体名称列表或实体类型列表。
+2.对于步骤1中识别的每个实体，提取所有与该实体相关的主张。主张需要符合指定的主张描述，并且实体应是主张的主体。
+对于每个主张，提取以下信息：
+-Subject：主张主体的实体名称。主体实体是主张中描述的行为的执行者。主体需是步骤1中识别的命名实体之一。
+-Object：主张客体的实体名称。客体实体是报告/处理行为或受行为影响的实体。如果客体实体未知，使用 NONE。
+-Claim Type：主张的总体类别。命名方式应在多个文本输入中重复，以便类似主张共享相同的主张类型。
+-Claim Status：**TRUE**, **FALSE** 或 **SUSPECTED**。TRUE 表示主张已确认，FALSE 表示主张被发现为假，SUSPECTED 表示主张未验证。
+-Claim Description：详细说明主张的理由，包含所有相关的证据和参考资料。
+-Claim Date：主张提出的时间段（start_date，end_date）。start_date 和 end_date 均应为 ISO-8601 格式。如果主张在单一日期提出，则设置相同的日期作为 start_date 和 end_date。如果日期未知，返回 NONE。
+-Claim Source Text：原文中所有与主张相关的引用的列表。
+将每个主张格式化为（<subject_entity>{tuple_delimiter}<object_entity>{tuple_delimiter}<claim_type>{tuple_delimiter}<claim_status>{tuple_delimiter}<claim_start_date>{tuple_delimiter}<claim_end_date>{tuple_delimiter}<claim_description>{tuple_delimiter}<claim_source>）
+
+以中文返回步骤1和2中识别的所有主张的单一列表。使用 {record_delimiter} 作为列表分隔符。
+
+完成后，输出 {completion_delimiter}
+
+-示例-
+示例1：
+Entity specification：organization
+Claim description：与实体相关的红旗
+Text：根据2022/01/10的一篇文章，A公司因在参与政府机构B发布的多项公共招标时操纵投标而被罚款。该公司由C个人拥有，他在2015年被怀疑从事腐败活动。
+Output：
+
+(COMPANY A{tuple_delimiter}GOVERNMENT AGENCY B{tuple_delimiter}ANTI-COMPETITIVE PRACTICES{tuple_delimiter}TRUE{tuple_delimiter}2022-01-10T00:00:00{tuple_delimiter}2022-01-10T00:00:00{tuple_delimiter}根据2022/01/10的一篇文章，A公司因在参与政府机构B发布的多项公共招标时操纵投标而被罚款{tuple_delimiter}根据2022/01/10的一篇文章，A公司因在参与政府机构B发布的多项公共招标时操纵投标而被罚款。)
+{completion_delimiter}
+
+示例2：
+Entity specification：A公司, C个人
+Claim description：与实体相关的红旗
+Text：根据2022/01/10的一篇文章，A公司因在参与政府机构B发布的多项公共招标时操纵投标而被罚款。该公司由C个人拥有，他在2015年被怀疑从事腐败活动。
+Output：
+
+(COMPANY A{tuple_delimiter}GOVERNMENT AGENCY B{tuple_delimiter}ANTI-COMPETITIVE PRACTICES{tuple_delimiter}TRUE{tuple_delimiter}2022-01-10T00:00:00{tuple_delimiter}2022-01-10T00:00:00{tuple_delimiter}根据2022/01/10的一篇文章，A公司因在参与政府机构B发布的多项公共招标时操纵投标而被罚款{tuple_delimiter}根据2022/01/10的一篇文章，A公司因在参与政府机构B发布的多项公共招标时操纵投标而被罚款。)
+{record_delimiter}
+(PERSON C{tuple_delimiter}NONE{tuple_delimiter}CORRUPTION{tuple_delimiter}SUSPECTED{tuple_delimiter}2015-01-01T00:00:00{tuple_delimiter}2015-12-30T00:00:00{tuple_delimiter}C个人在2015年被怀疑从事腐败活动{tuple_delimiter}该公司由C个人拥有，他在2015年被怀疑从事腐败活动。)
+{completion_delimiter}
+
+-真实数据-
+使用以下输入完成你的回答。
+Entity specification：{entity_specs}
+Claim description：{claim_description}
+Text：{input_text}
+输出：

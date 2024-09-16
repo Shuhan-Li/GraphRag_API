@@ -1,0 +1,115 @@
+
+-Goal-
+Given a text document that is potentially relevant to this activity and a list of entity types, identify all entities of those types from the text and all relationships among the identified entities.
+
+-Steps-
+1. Identify all entities. For each identified entity, extract the following information:
+- entity_name: Name of the entity, capitalized
+- entity_type: One of the following types: [cultural practices, historical landmarks, regional geography, ethnic identity, familial relationships, economic activities, architectural features, social interactions, literary themes]
+- entity_description: Comprehensive description of the entity's attributes and activities
+Format each entity as ("entity"{tuple_delimiter}<entity_name>{tuple_delimiter}<entity_type>{tuple_delimiter}<entity_description>)
+
+2. From the entities identified in step 1, identify all pairs of (source_entity, target_entity) that are *clearly related* to each other.
+For each pair of related entities, extract the following information:
+- source_entity: name of the source entity, as identified in step 1
+- target_entity: name of the target entity, as identified in step 1
+- relationship_description: explanation as to why you think the source entity and the target entity are related to each other
+- relationship_strength: an integer score between 1 to 10, indicating strength of the relationship between the source entity and target entity
+Format each relationship as ("relationship"{tuple_delimiter}<source_entity>{tuple_delimiter}<target_entity>{tuple_delimiter}<relationship_description>{tuple_delimiter}<relationship_strength>)
+
+3. Return output in The primary language of the provided text is Chinese. The text includes characters and expressions that are typical of the Chinese language, and there are no clear indicators of any other language being used as the primary means of communication in this text. as a single list of all the entities and relationships identified in steps 1 and 2. Use **{record_delimiter}** as the list delimiter.
+
+4. If you have to translate into The primary language of the provided text is Chinese. The text includes characters and expressions that are typical of the Chinese language, and there are no clear indicators of any other language being used as the primary means of communication in this text., just translate the descriptions, nothing else!
+
+5. When finished, output {completion_delimiter}.
+
+-Examples-
+######################
+
+Example 1:
+
+entity_types: [cultural practices, historical landmarks, regional geography, ethnic identity, familial relationships, economic activities, architectural features, social interactions, literary themes]
+text:
+船来时，小孩子的想象，当在那些拉船人一方面。大人呢，孵一巢小鸡，养两只猪，托下行船夫打副金耳环，带两丈官青布或一坛好酱油、一个双料的美孚灯罩回来，便占去了大部分作主妇的心了。
+------------------------
+output:
+("entity"{tuple_delimiter}拉船人{tuple_delimiter}职业身份{tuple_delimiter}从事拉船工作的人，与船相关的职业，体现了当地的一种经济活动)
+{record_delimiter}
+("entity"{tuple_delimiter}孵小鸡{tuple_delimiter}文化实践{tuple_delimiter}孵化小鸡是农村中常见的家禽养殖活动，反映了一种自给自足的生活方式)
+{record_delimiter}
+("entity"{tuple_delimiter}养猪{tuple_delimiter}经济活动{tuple_delimiter}养猪是农户重要的家庭副业，也是重要的经济来源之一)
+{record_delimiter}
+("entity"{tuple_delimiter}金耳环{tuple_delimiter}物质文化{tuple_delimiter}金耳环作为一种装饰品，可能代表着某种审美偏好或社会地位)
+{record_delimiter}
+("entity"{tuple_delimiter}官青布{tuple_delimiter}物质文化{tuple_delimiter}官青布是一种布料，可能用于制作衣物或其他用品，体现了当地的物质生活)
+{record_delimiter}
+("entity"{tuple_delimiter}酱油{tuple_delimiter}食品文化{tuple_delimiter}酱油是一种调味品，反映了中国饮食文化中对调味的重视)
+{record_delimiter}
+("entity"{tuple_delimiter}美孚灯罩{tuple_delimiter}物质文化{tuple_delimiter}美孚灯罩是一种灯具配件，可能代表了一定的生活水平和照明需求)
+{record_delimiter}
+("relationship"{tuple_delimiter}拉船人{tuple_delimiter}孵小鸡{tuple_delimiter}拉船人可能在家中孵化小鸡，体现了工作与家庭生活的结合{tuple_delimiter}4)
+{record_delimiter}
+("relationship"{tuple_delimiter}拉船人{tuple_delimiter}养猪{tuple_delimiter}拉船人也可能从事养猪等家庭副业，增加家庭收入{tuple_delimiter}4)
+{record_delimiter}
+("relationship"{tuple_delimiter}孵小鸡{tuple_delimiter}养猪{tuple_delimiter}孵化小鸡和养猪都是农户重要的家庭活动，相互关联，体现了自给自足的生活方式{tuple_delimiter}5)
+{record_delimiter}
+("relationship"{tuple_delimiter}金耳环{tuple_delimiter}官青布{tuple_delimiter}金耳环和官青布都是家庭生活中的物质物品，可能代表着家庭的经济状况和审美取向{tuple_delimiter}3)
+{record_delimiter}
+("relationship"{tuple_delimiter}酱油{tuple_delimiter}美孚灯罩{tuple_delimiter}酱油和美孚灯罩作为生活用品，都反映了家庭对生活质量的追求{tuple_delimiter}3)
+{completion_delimiter}
+#############################
+
+
+Example 2:
+
+entity_types: [cultural practices, historical landmarks, regional geography, ethnic identity, familial relationships, economic activities, architectural features, social interactions, literary themes]
+text:
+那条河水便是历史上知名的酉水，新名字叫作白河。白河下游到辰州与沅水汇流后，便略显浑浊，有出山泉水的意思。若溯流而上，则三丈五丈的深潭皆清澈见底。深潭为白日所映照，河底小小白石子，有花纹的玛瑙石子，全看得明明白白。水中游鱼来去，全如浮在空气里。两岸多高山，山中多可以造纸的细竹，长年作深翠颜色，逼人眼目。近水人家多在桃杏花里，春天时只需注意，凡有桃花处必有人家，凡有人家处必可沽酒。夏天则晒晾在日光下耀目的紫花布衣裤，可以作为人家所在的旗帜。秋冬来时，房屋在悬崖上的，滨水的，无不朗然入目。黄泥的墙，乌黑的瓦，位置则永远那么妥贴，且与四围环境极其调和，使人迎面得到的印象，实在非常愉快。
+------------------------
+output:
+("entity"{tuple_delimiter}酉水{tuple_delimiter}historical landmarks{tuple_delimiter}历史上知名的酉水，现称为白河)
+{record_delimiter}
+("entity"{tuple_delimiter}白河{tuple_delimiter}regional geography{tuple_delimiter}新名字叫作白河，是流经辰州与沅水汇流的一条河流)
+{record_delimiter}
+("entity"{tuple_delimiter}辰州{tuple_delimiter}regional geography{tuple_delimiter}白河下游流经的地点，与沅水汇合)
+{record_delimiter}
+("entity"{tuple_delimiter}沅水{tuple_delimiter}regional geography{tuple_delimiter}与白河汇合的另一条河流)
+{record_delimiter}
+("entity"{tuple_delimiter}深潭{tuple_delimiter}natural features{tuple_delimiter}白河中的深潭，清澈见底)
+{record_delimiter}
+("entity"{tuple_delimiter}细竹{tuple_delimiter}flora{tuple_delimiter}两岸山中生长的适合造纸的细竹)
+{record_delimiter}
+("entity"{tuple_delimiter}桃杏花{tuple_delimiter}flora{tuple_delimiter}春天时，近水人家周围盛开的桃杏花)
+{record_delimiter}
+("entity"{tuple_delimiter}紫花布衣裤{tuple_delimiter}cultural practices{tuple_delimiter}夏天时，水中人家晒晾的紫花布衣裤)
+{record_delimiter}
+("entity"{tuple_delimiter}黄泥墙{tuple_delimiter}architectural features{tuple_delimiter}秋冬时，房屋的黄色泥墙)
+{record_delimiter}
+("entity"{tuple_delimiter}黑瓦{tuple_delimiter}architectural features{tuple_delimiter}秋冬时，房屋的黑色瓦片)
+{record_delimiter}
+("relationship"{tuple_delimiter}酉水{tuple_delimiter}白河{tuple_delimiter}酉水是历史上的名称，现在被称为白河{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}白河{tuple_delimiter}辰州{tuple_delimiter}白河下游流经辰州，与沅水汇合{tuple_delimiter}8)
+{record_delimiter}
+("relationship"{tuple_delimiter}白河{tuple_delimiter}深潭{tuple_delimiter}白河中存在清澈见底的深潭{tuple_delimiter}7)
+{record_delimiter}
+("relationship"{tuple_delimiter}细竹{tuple_delimiter}白河{tuple_delimiter}两岸的细竹与白河的地理环境相关{tuple_delimiter}6)
+{record_delimiter}
+("relationship"{tuple_delimiter}桃杏花{tuple_delimiter}近水人家{tuple_delimiter}春天时，桃杏花标志着近水人家的存在{tuple_delimiter}7)
+{record_delimiter}
+("relationship"{tuple_delimiter}紫花布衣裤{tuple_delimiter}近水人家{tuple_delimiter}夏天时，紫花布衣裤是近水人家所在地的标志{tuple_delimiter}6)
+{record_delimiter}
+("relationship"{tuple_delimiter}黄泥墙{tuple_delimiter}房屋{tuple_delimiter}秋冬时，房屋特征包括黄泥墙{tuple_delimiter}7)
+{record_delimiter}
+("relationship"{tuple_delimiter}黑瓦{tuple_delimiter}房屋{tuple_delimiter}秋冬时，房屋特征包括黑瓦{tuple_delimiter}7)
+{completion_delimiter}
+#############################
+
+
+
+-Real Data-
+######################
+entity_types: [cultural practices, historical landmarks, regional geography, ethnic identity, familial relationships, economic activities, architectural features, social interactions, literary themes]
+text: {input_text}
+######################
+output:
